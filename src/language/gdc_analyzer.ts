@@ -4,18 +4,18 @@ import {
 	GDCDiagnosticSeverity
 } from "./gdc_diagnostic";
 
-interface SourceLine {
-	number: number;
-	text: string;
-	indentation: number;
-	content: string;
-}
+import {
+	GDCDocument,
+	GDCSourceLine
+} from "./gdc_document";
+
 
 interface DialogueDeclaration {
 	identifier: string;
 	line: number;
 	hasEnd: boolean;
 }
+
 
 const DIALOGUE_PATTERN =
 	/^dialogue\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(?:#.*)?$/;
@@ -28,9 +28,9 @@ const END_PATTERN = /^end\s*(?:#.*)?$/;
 
 export class GDCAnalyzer {
 	static analyze(source: string): GDCDiagnostic[] {
-		const rawLines = source.split(/\r?\n/);
+		const document = new GDCDocument(source);
 		const diagnostics: GDCDiagnostic[] = [];
-		const lines: SourceLine[] = [];
+		const lines = document.significantLines;
 
 		let characterDeclaration: {
 			identifier: string;
@@ -43,72 +43,25 @@ export class GDCAnalyzer {
 
 
 		const report = (
-			line: number,
+			line: GDCSourceLine,
 			message: string,
 			severity: GDCDiagnosticSeverity = "error",
 			startCharacter: number = 0,
 			endCharacter?: number
 		): void => {
-			const lineText = rawLines[line] ?? "";
-
 			diagnostics.push({
 				message,
 				severity,
 				start: {
-					line,
+					line: line.number,
 					character: startCharacter
 				},
 				end: {
-					line,
-					character: endCharacter ?? lineText.length
+					line: line.number,
+					character: endCharacter ?? line.text.length
 				}
 			});
 		};
-
-
-		const isCommentOrBlank = (line: string): boolean => {
-			const trimmed = line.trim();
-
-			return trimmed.length === 0 || trimmed.startsWith("#");
-		};
-
-
-		const getIndentation = (line: string): number => {
-			let indentation = 0;
-
-			for (const character of line) {
-				if (character === "\t" || character === " ") {
-					indentation++;
-				} else {
-					break;
-				}
-			}
-
-			return indentation;
-		};
-
-
-		const getContent = (line: string): string => {
-			return line.replace(/^[\t ]+/, "");
-		};
-
-
-		// Build the source-line representation.
-
-		for (let i = 0; i < rawLines.length; i++) {
-			const rawLine = rawLines[i];
-
-			if (isCommentOrBlank(rawLine)) {
-				continue;
-			}
-
-			lines.push({
-				number: i,
-				text: rawLine,
-				indentation: getIndentation(rawLine),
-				content: getContent(rawLine)
-			});
-		}
 
 
 		// Empty files are valid while being edited.
@@ -135,7 +88,7 @@ export class GDCAnalyzer {
 				if (!match) {
 					if (content.endsWith(":") || content.includes("  ")) {
 						report(
-							line.number,
+							line,
 							"Malformed character declaration. Expected 'character Identifier'."
 						);
 					}
@@ -143,9 +96,9 @@ export class GDCAnalyzer {
 					continue;
 				}
 
-				if (line.indentation !== 0) {
+				if (line.indentationLevel !== 0) {
 					report(
-						line.number,
+						line,
 						"'character' declarations must be at the root level."
 					);
 
@@ -154,7 +107,7 @@ export class GDCAnalyzer {
 
 				if (characterDeclaration !== null) {
 					report(
-						line.number,
+						line,
 						"Only one 'character' declaration is allowed per file."
 					);
 
@@ -178,7 +131,7 @@ export class GDCAnalyzer {
 				if (!match) {
 					if (content.includes(":") || content.trim() === "dialogue") {
 						report(
-							line.number,
+							line,
 							"Malformed dialogue declaration. Expected 'dialogue Identifier:'."
 						);
 					}
@@ -186,9 +139,9 @@ export class GDCAnalyzer {
 					continue;
 				}
 
-				if (line.indentation !== 0) {
+				if (line.indentationLevel !== 0) {
 					report(
-						line.number,
+						line,
 						"'dialogue' declarations must be at the root level."
 					);
 
@@ -196,10 +149,14 @@ export class GDCAnalyzer {
 				}
 
 				if (currentDialogue !== null && !currentDialogue.hasEnd) {
-					report(
-						currentDialogue.line,
-						`Dialogue '${currentDialogue.identifier}' is missing its required 'end' terminator.`
-					);
+					const previousLine = document.getLine(currentDialogue.line);
+
+					if (previousLine) {
+						report(
+							previousLine,
+							`Dialogue '${currentDialogue.identifier}' is missing its required 'end' terminator.`
+						);
+					}
 				}
 
 				const identifier = match[1];
@@ -210,7 +167,7 @@ export class GDCAnalyzer {
 
 				if (duplicate) {
 					report(
-						line.number,
+						line,
 						`Duplicate dialogue identifier '${identifier}'.`
 					);
 
@@ -234,7 +191,7 @@ export class GDCAnalyzer {
 
 			if (currentDialogue === null) {
 				report(
-					line.number,
+					line,
 					"Instruction found outside a dialogue declaration."
 				);
 
@@ -245,9 +202,9 @@ export class GDCAnalyzer {
 			// Dialogue terminator.
 
 			if (END_PATTERN.test(content)) {
-				if (line.indentation === 0) {
+				if (line.indentationLevel === 0) {
 					report(
-						line.number,
+						line,
 						"'end' must be indented inside its dialogue."
 					);
 
@@ -256,7 +213,7 @@ export class GDCAnalyzer {
 
 				if (currentDialogue.hasEnd) {
 					report(
-						line.number,
+						line,
 						"Duplicate 'end' terminator."
 					);
 
@@ -272,9 +229,9 @@ export class GDCAnalyzer {
 
 			// Check indentation characters.
 
-			if (line.text.startsWith(" ")) {
+			if (line.hasSpaceIndentation) {
 				report(
-					line.number,
+					line,
 					"GDC uses tabs for indentation, not spaces."
 				);
 			}
@@ -282,9 +239,9 @@ export class GDCAnalyzer {
 
 			// Instructions must be indented.
 
-			if (line.indentation === 0) {
+			if (line.indentationLevel === 0) {
 				report(
-					line.number,
+					line,
 					"Instructions must be indented inside their dialogue."
 				);
 			}
@@ -294,20 +251,28 @@ export class GDCAnalyzer {
 		// Report an unterminated final dialogue.
 
 		if (currentDialogue !== null && !currentDialogue.hasEnd) {
-			report(
-				currentDialogue.line,
-				`Dialogue '${currentDialogue.identifier}' is missing its required 'end' terminator.`
-			);
+			const declarationLine = document.getLine(currentDialogue.line);
+
+			if (declarationLine) {
+				report(
+					declarationLine,
+					`Dialogue '${currentDialogue.identifier}' is missing its required 'end' terminator.`
+				);
+			}
 		}
 
 
 		// A character declaration is required when dialogue exists.
 
 		if (dialogues.length > 0 && characterDeclaration === null) {
-			report(
-				dialogues[0].line,
-				"A 'character' declaration is required before dialogue declarations."
-			);
+			const firstDialogueLine = document.getLine(dialogues[0].line);
+
+			if (firstDialogueLine) {
+				report(
+					firstDialogueLine,
+					"A 'character' declaration is required before dialogue declarations."
+				);
+			}
 		}
 
 
