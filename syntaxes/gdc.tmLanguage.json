@@ -1,0 +1,132 @@
+
+{
+	"scopeName": "source.gdc",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#declarations"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#punctuation"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.number-sign.gdc",
+					"match": "#.*$"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.gdc",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.gdc",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.gdc",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.gdc",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		},
+		"declarations": {
+			"patterns": [
+				{
+					"match": "\\b(character)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": {
+							"name": "keyword.control.gdc"
+						},
+						"2": {
+							"name": "entity.name.type.gdc"
+						}
+					}
+				},
+				{
+					"match": "\\b(dialogue)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": {
+							"name": "keyword.control.gdc"
+						},
+						"2": {
+							"name": "entity.name.function.gdc"
+						}
+					}
+				},
+				{
+					"match": "\\b(event)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": {
+							"name": "keyword.control.gdc"
+						},
+						"2": {
+							"name": "entity.name.function.gdc"
+						}
+					}
+				},
+				{
+					"match": "\\b(speaker)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": {
+							"name": "keyword.control.gdc"
+						},
+						"2": {
+							"name": "variable.parameter.gdc"
+						}
+					}
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.gdc",
+					"match": "\\b(character|dialogue|say|speaker|autoadvance|wait|choice|event|end)\\b"
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.gdc",
+					"match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+				}
+			]
+		},
+		"punctuation": {
+			"patterns": [
+				{
+					"name": "punctuation.separator.colon.gdc",
+					"match": ":"
+				}
+			]
+		}
+	}
+}
