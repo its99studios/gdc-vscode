@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GDCEndSyntax = exports.GDCChoiceOptionSyntax = exports.GDCChoiceSyntax = exports.GDCEventSyntax = exports.GDCAutoadvanceSyntax = exports.GDCWaitSyntax = exports.GDCSpeakerSyntax = exports.GDCSaySyntax = exports.GDCInstructionSyntax = exports.GDCDialogueSyntax = exports.GDCCharacterSyntax = exports.GDCFileSyntax = exports.GDCSyntaxNode = void 0;
+exports.GDCEndSyntax = exports.GDCChoiceOptionSyntax = exports.GDCChoiceSyntax = exports.GDCEventSyntax = exports.GDCWaitSyntax = exports.GDCSpeakerSyntax = exports.GDCSaySyntax = exports.GDCInstructionSyntax = exports.GDCDialogueSyntax = exports.GDCCharacterSyntax = exports.GDCFileSyntax = exports.GDCSyntaxNode = void 0;
 // Base syntax node.
 class GDCSyntaxNode {
     range;
@@ -47,20 +47,24 @@ exports.GDCInstructionSyntax = GDCInstructionSyntax;
 // Say instruction.
 class GDCSaySyntax extends GDCInstructionSyntax {
     text;
-    constructor(range, text) {
+    // Overrides the current speaker for this line only.
+    speakerOverride;
+    // Configured by the autoadvance instruction.
+    autoAdvance;
+    constructor(range, text, speakerOverride = null, autoAdvance = null) {
         super(range);
         this.text = text;
+        this.speakerOverride = speakerOverride;
+        this.autoAdvance = autoAdvance;
     }
 }
 exports.GDCSaySyntax = GDCSaySyntax;
-// Speaker instruction.
+// Persistent speaker instruction.
 class GDCSpeakerSyntax extends GDCInstructionSyntax {
     speaker;
-    inline;
-    constructor(range, speaker, inline) {
+    constructor(range, speaker) {
         super(range);
         this.speaker = speaker;
-        this.inline = inline;
     }
 }
 exports.GDCSpeakerSyntax = GDCSpeakerSyntax;
@@ -73,15 +77,6 @@ class GDCWaitSyntax extends GDCInstructionSyntax {
     }
 }
 exports.GDCWaitSyntax = GDCWaitSyntax;
-// Autoadvance instruction.
-class GDCAutoadvanceSyntax extends GDCInstructionSyntax {
-    duration;
-    constructor(range, duration) {
-        super(range);
-        this.duration = duration;
-    }
-}
-exports.GDCAutoadvanceSyntax = GDCAutoadvanceSyntax;
 // Event instruction.
 class GDCEventSyntax extends GDCInstructionSyntax {
     identifier;

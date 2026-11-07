@@ -81,28 +81,35 @@ export abstract class GDCInstructionSyntax extends GDCSyntaxNode {}
 export class GDCSaySyntax extends GDCInstructionSyntax {
 	readonly text: string;
 
-	constructor(range: GDCSyntaxRange, text: string) {
+	// Overrides the current speaker for this line only.
+	readonly speakerOverride: string | null;
+
+	// Configured by the autoadvance instruction.
+	readonly autoAdvance: number | null;
+
+	constructor(
+		range: GDCSyntaxRange,
+		text: string,
+		speakerOverride: string | null = null,
+		autoAdvance: number | null = null
+	) {
 		super(range);
+
 		this.text = text;
+		this.speakerOverride = speakerOverride;
+		this.autoAdvance = autoAdvance;
 	}
 }
 
 
-// Speaker instruction.
+// Persistent speaker instruction.
 
 export class GDCSpeakerSyntax extends GDCInstructionSyntax {
 	readonly speaker: string;
-	readonly inline: boolean;
 
-	constructor(
-		range: GDCSyntaxRange,
-		speaker: string,
-		inline: boolean
-	) {
+	constructor(range: GDCSyntaxRange, speaker: string) {
 		super(range);
-
 		this.speaker = speaker;
-		this.inline = inline;
 	}
 }
 
@@ -110,18 +117,6 @@ export class GDCSpeakerSyntax extends GDCInstructionSyntax {
 // Wait instruction.
 
 export class GDCWaitSyntax extends GDCInstructionSyntax {
-	readonly duration: number;
-
-	constructor(range: GDCSyntaxRange, duration: number) {
-		super(range);
-		this.duration = duration;
-	}
-}
-
-
-// Autoadvance instruction.
-
-export class GDCAutoadvanceSyntax extends GDCInstructionSyntax {
 	readonly duration: number;
 
 	constructor(range: GDCSyntaxRange, duration: number) {
