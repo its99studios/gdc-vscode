@@ -1,0 +1,35 @@
+{
+	"name": "gdc-vscode",
+	"displayName": "GDC",
+	"description": "Language support for Godot Dialogue Compositor (GDC).",
+	"version": "1.0.0",
+	"publisher": "99 Studios",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "gdc",
+				"aliases": [
+				"GDC",
+				"gdc"
+				],
+				"extensions": [
+					".gdc"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "gdc",
+				"scopeName": "source.gdc",
+				"path": "./syntaxes/gdc.tmLanguage.json"
+			}
+		]
+	}
+}
