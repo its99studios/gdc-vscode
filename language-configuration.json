@@ -23,7 +23,14 @@
 		}
 	],
 	"indentationRules": {
-		"increaseIndentPattern": "^\\s*(dialogue\\s+[A-Za-z_][A-Za-z0-9_]*|choice|\".*\"|'.*'):\\s*(#.*)?$",
-		"decreaseIndentPattern": "^\\s*end\\b"
-	}
+		"increaseIndentPattern": "^\\s*(dialogue\\s+[A-Za-z_][A-Za-z0-9_]*|choice|\".*\"|'.*'):\\s*(#.*)?$"
+	},
+	"onEnterRules": [
+		{
+			"beforeText": "^\\s*end\\s*$",
+			"action": {
+				"indent": "outdent"
+			}
+		}
+	]
 }

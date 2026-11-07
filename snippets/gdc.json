@@ -1,0 +1,66 @@
+
+{
+	"Dialogue declaration": {
+		"prefix": "dialogue",
+		"body": [
+			"dialogue ${1:dialogue_name}:",
+			"\tsay \"${2:Hello!}\"",
+			"\tend"
+		],
+		"description": "Create a new GDC dialogue"
+	},
+	"Character declaration": {
+		"prefix": "character",
+		"body": [
+			"character ${1:CharacterName}"
+		],
+		"description": "Declare the character for this GDC file"
+	},
+	"Say instruction": {
+		"prefix": "say",
+		"body": [
+			"say \"${1:Text}\""
+		],
+		"description": "Create a dialogue line"
+	},
+	"Auto-advance": {
+		"prefix": "autoadvance",
+		"body": [
+			"autoadvance ${1:1.5}"
+		],
+		"description": "Set the preceding say instruction to auto-advance"
+	},
+	"Choice block": {
+		"prefix": "choice",
+		"body": [
+			"choice:",
+			"\t\"${1:Option 1}\":",
+			"\t\t${2:say \"Response\"}",
+			"",
+			"\t\"${3:Option 2}\":",
+			"\t\t${4:say \"Response\"}"
+		],
+		"description": "Create a choice with two options"
+	},
+	"Wait instruction": {
+		"prefix": "wait",
+		"body": [
+			"wait ${1:1.0}"
+		],
+		"description": "Pause dialogue execution"
+	},
+	"Event instruction": {
+		"prefix": "event",
+		"body": [
+			"event ${1:event_name}"
+		],
+		"description": "Trigger a Godot-side event"
+	},
+	"Speaker override": {
+		"prefix": "speaker",
+		"body": [
+			"speaker ${1:Player} say \"${2:Text}\""
+		],
+		"description": "Set the speaker for one dialogue line"
+	}
+}

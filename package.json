@@ -30,6 +30,12 @@
 				"scopeName": "source.gdc",
 				"path": "./syntaxes/gdc.tmLanguage.json"
 			}
+		],
+		"snippets": [
+			{
+				"language": "gdc",
+				"path": "./snippets/gdc.json"
+			}
 		]
 	}
 }
