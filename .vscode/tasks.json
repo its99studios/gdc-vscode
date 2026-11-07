@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Export GDC VSIX",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"@vscode/vsce",
+				"package"
+			],
+			"group": "build",
+			"problemMatcher": []
+		}
+	]
+}
