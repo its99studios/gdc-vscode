@@ -3,7 +3,8 @@
 	"displayName": "GDC",
 	"description": "Language support for Godot Dialogue Compositor (GDC).",
 	"version": "1.0.0",
-	"publisher": "99 Studios",
+	"publisher": "its99studios",
+	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.90.0"
 	},
