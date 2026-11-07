@@ -22,10 +22,25 @@
 			"close": "'"
 		}
 	],
-	"indentationRules": {
-		"increaseIndentPattern": "^\\s*(dialogue\\s+[A-Za-z_][A-Za-z0-9_]*|choice|\".*\"|'.*'):\\s*(#.*)?$"
-	},
 	"onEnterRules": [
+		{
+			"beforeText": "^\\s*dialogue\\s+[A-Za-z_][A-Za-z0-9_]*\\s*:\\s*(?:#.*)?$",
+			"action": {
+				"indent": "indent"
+			}
+		},
+		{
+			"beforeText": "^\\s*choice\\s*:\\s*(?:#.*)?$",
+			"action": {
+				"indent": "indent"
+			}
+		},
+		{
+			"beforeText": "^\\s*(?:\".*\"|'.*'):\\s*(?:#.*)?$",
+			"action": {
+				"indent": "indent"
+			}
+		},
 		{
 			"beforeText": "^\\s*end\\s*$",
 			"action": {
