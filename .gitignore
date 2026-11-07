@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Compiled TypeScript
+out/
+
+# VS Code
+.vscode-test/
+
+# Build output
+*.vsix
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
