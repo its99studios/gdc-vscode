@@ -15,7 +15,8 @@ connection.onInitialize((_params) => {
                 resolveProvider: false,
                 triggerCharacters: [" "]
             },
-            documentSymbolProvider: true
+            documentSymbolProvider: true,
+            foldingRangeProvider: true
         }
     };
 });
@@ -188,6 +189,73 @@ connection.onDocumentSymbol((params) => {
         });
     }
     return symbols;
+});
+connection.onFoldingRanges((params) => {
+    const document = documents.get(params.textDocument.uri);
+    if (document === undefined) {
+        return [];
+    }
+    const lines = document.getText().split(/\r?\n/);
+    const foldingRanges = [];
+    const blocks = [];
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const content = line.trim();
+        if (content.length === 0 || content.startsWith("#")) {
+            continue;
+        }
+        const indentation = line.match(/^\t*/)?.[0].length ?? 0;
+        // Close blocks when indentation returns to their level.
+        while (blocks.length > 0 &&
+            indentation <= blocks[blocks.length - 1].indentation) {
+            const block = blocks.pop();
+            if (i - 1 > block.startLine) {
+                foldingRanges.push({
+                    startLine: block.startLine,
+                    endLine: i - 1,
+                    kind: block.kind
+                });
+            }
+        }
+        // Dialogue declaration.
+        if (/^dialogue\s+[A-Za-z_][A-Za-z0-9_]*\s*:/.test(content)) {
+            blocks.push({
+                startLine: i,
+                indentation,
+                kind: node_1.FoldingRangeKind.Region
+            });
+            continue;
+        }
+        // Choice block.
+        if (content === "choice:") {
+            blocks.push({
+                startLine: i,
+                indentation,
+                kind: node_1.FoldingRangeKind.Region
+            });
+            continue;
+        }
+        // Choice option.
+        if (/^(["']).*\1\s*:$/.test(content)) {
+            blocks.push({
+                startLine: i,
+                indentation,
+                kind: node_1.FoldingRangeKind.Region
+            });
+        }
+    }
+    // Close any remaining blocks at the end of the file.
+    while (blocks.length > 0) {
+        const block = blocks.pop();
+        if (lines.length - 1 > block.startLine) {
+            foldingRanges.push({
+                startLine: block.startLine,
+                endLine: lines.length - 1,
+                kind: block.kind
+            });
+        }
+    }
+    return foldingRanges;
 });
 documents.listen(connection);
 connection.listen();
