@@ -1,0 +1,82 @@
+name: GDC VSCode Latest
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gdc-latest-release
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish Development Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message
+        id: release
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --format=%s "$GITHUB_SHA")
+
+          if [[ "$COMMIT_MESSAGE" == *"[Release]"* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Release commit detected. Skipping development release."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        if: steps.release.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        if: steps.release.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Compile extension
+        if: steps.release.outputs.skip != 'true'
+        run: npm run compile
+
+      - name: Package extension
+        if: steps.release.outputs.skip != 'true'
+        run: npx --yes @vscode/vsce package --out gdc-latest.vsix
+
+      - name: Update latest tag
+        if: steps.release.outputs.skip != 'true'
+        run: |
+          git tag --force latest "$GITHUB_SHA"
+          git push origin refs/tags/latest --force
+
+      - name: Get short commit SHA
+        if: steps.release.outputs.skip != 'true'
+        id: commit
+        run: echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GDC Latest
+        if: steps.release.outputs.skip != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: GDC Latest
+          body: |
+            Development release for commit [`${{ steps.commit.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }}).
+
+            This is a **development release**, meaning it is **likely not tested** and **you should only download it for testing the extension.**
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: gdc-latest.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
