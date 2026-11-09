@@ -108,7 +108,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.gdc",
-					"match": "\\b(character|dialogue|say|speaker|autoadvance|wait|choice|event|end)\\b"
+					"match": "\\b(character|dialogue|say|speaker|autoadvance|wait|choice|event|switch|end)\\b"
 				}
 			]
 		},
