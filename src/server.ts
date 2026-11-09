@@ -120,6 +120,7 @@ connection.onHover((params): Hover | null => {
 		wait: "Pauses dialogue execution for the specified number of seconds.",
 		choice: "Creates a player choice block containing selectable options.",
 		event: "Requests a Godot-side event.",
+		switch: "Switches execution to another dialogue, replacing the current dialogue.",
 		end: "Terminates the current dialogue."
 	};
 
@@ -242,6 +243,7 @@ connection.onCompletion((params): CompletionItem[] => {
 		createCompletion("wait", "Pauses dialogue execution."),
 		createCompletion("choice", "Creates a player choice block."),
 		createCompletion("event", "Requests a Godot-side event."),
+		createCompletion("switch", "Switches execution to another dialogue, replacing the current dialogue."),
 		createCompletion("end", "Terminates the current dialogue.")
 	];
 
