@@ -6,7 +6,7 @@
 
 GDC is a language and runtime made for handling dialogue in Godot. It has syntax similar to GDScript and integrates perfectly into Godot.
 
-Make sure to use **.ngdc** files,
+Make sure to use **.ngdc** files, since .gdc is used for compiled GDScript.
 
 ```
 character ExampleGuy
