@@ -56,6 +56,13 @@
 		],
 		"description": "Trigger a Godot-side event"
 	},
+	"Switch dialogue": {
+		"prefix": "switch",
+		"body": [
+			"switch ${1:dialogue_name}"
+		],
+		"description": "Switch execution to another dialogue"
+	},
 	"Speaker override": {
 		"prefix": "speaker",
 		"body": [
