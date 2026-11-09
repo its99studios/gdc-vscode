@@ -137,6 +137,16 @@ export class GDCEventSyntax extends GDCInstructionSyntax {
 	}
 }
 
+// Switch dialogue instruction.
+
+export class GDCSwitchSyntax extends GDCInstructionSyntax {
+    readonly identifier: string;
+
+    constructor(range: GDCSyntaxRange, identifier: string) {
+        super(range);
+        this.identifier = identifier;
+    }
+}
 
 // Choice block.
 

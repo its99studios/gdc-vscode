@@ -13,7 +13,8 @@ import {
 	GDCEventSyntax,
 	GDCChoiceSyntax,
 	GDCChoiceOptionSyntax,
-	GDCEndSyntax
+	GDCEndSyntax,
+	GDCSwitchSyntax
 } from "./gdc_syntax";
 
 export interface GDCParserDiagnostic {
@@ -409,7 +410,6 @@ export class GDCParser {
 		}
 
 		// Event.
-
 		const eventMatch = content.match(
 			new RegExp(
 				`^event\\s+(${GDCParser.IDENTIFIER_PATTERN})$`
@@ -418,18 +418,32 @@ export class GDCParser {
 
 		if (eventMatch !== null) {
 			this.index++;
-
 			return new GDCEventSyntax(
 				this.createLineRange(line),
 				eventMatch[1]
 			);
 		}
 
+		// Switch dialogue instruction.
+		const switchMatch = content.match(
+			new RegExp(
+				`^switch\\s+(${GDCParser.IDENTIFIER_PATTERN})$`
+			)
+		);
+
+		if (switchMatch !== null) {
+			this.index++;
+			return new GDCSwitchSyntax(
+				this.createLineRange(line),
+				switchMatch[1]
+			);
+		}
+
+		// Unknown instruction.
 		this.report(`Unknown instruction '${content}'.`, line);
 		this.index++;
 		return null;
-	}
-
+}
 
 	// Choice blocks.
 
