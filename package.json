@@ -29,7 +29,7 @@
 					"gdc"
 				],
 				"extensions": [
-					".gdc"
+					".ngdc"
 				],
 				"configuration": "./language-configuration.json",
 				"icon": {
