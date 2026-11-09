@@ -69,7 +69,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: GDC Latest
+          name: GDC VSCode Latest
           body: |
             Development release for commit [`${{ steps.commit.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }}).
 
